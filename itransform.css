@@ -94,6 +94,20 @@ html,body {-webkit-backface-visibility:hidden;}
     background: white;
 }
 
+.network-slider-title {
+    font-family: 'Open Sans',sans-serif;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.network-slider-next {
+    margin-right: 10px;
+}
+
+.network-slider-bar {
+    border: none!important;
+}
+
 #info {
     width: 20%;
     height: 350px;

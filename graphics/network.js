@@ -4809,32 +4809,31 @@ links.Network.Slider = function(container) {
 
     this.frame = document.createElement("DIV");
     //this.frame.style.backgroundColor = "#E5E5E5";
-    this.frame.style.width = "100%";
+    this.frame.style.width = "80%";
     this.frame.style.position = "relative";
 
     this.title = document.createElement("DIV");
+    this.title.className = "network-slider-title";
     this.title.style.margin = "2px";
     this.title.style.marginBottom = "5px";
     this.title.innerHTML = "";
     this.container.appendChild(this.title);
 
-    this.frame.prev = document.createElement("INPUT");
-    this.frame.prev.type = "BUTTON";
-    this.frame.prev.value = "Prev";
+    this.frame.prev = document.createElement("i");
+    this.frame.prev.className = "network-slider-prev btn icon-backward";
     this.frame.appendChild(this.frame.prev);
 
-    this.frame.play = document.createElement("INPUT");
-    this.frame.play.type = "BUTTON";
-    this.frame.play.value = "Play";
+    this.frame.play = document.createElement("i");
+    this.frame.play.className = "network-slider-play btn icon-play";
     this.frame.appendChild(this.frame.play);
 
-    this.frame.next = document.createElement("INPUT");
-    this.frame.next.type = "BUTTON";
-    this.frame.next.value = "Next";
+    this.frame.next = document.createElement("i");
+    this.frame.next.className = "network-slider-next btn icon-forward";
     this.frame.appendChild(this.frame.next);
 
     this.frame.bar = document.createElement("INPUT");
     this.frame.bar.type = "BUTTON";
+    this.frame.bar.className = "network-slider-bar";
     this.frame.bar.style.position = "absolute";
     this.frame.bar.style.border = "1px solid red";
     this.frame.bar.style.width = "100px";
@@ -4847,6 +4846,7 @@ links.Network.Slider = function(container) {
 
     this.frame.slide = document.createElement("INPUT");
     this.frame.slide.type = "BUTTON";
+    this.frame.slide.className = "network-slider-slide";
     this.frame.slide.style.margin = "0px";
     this.frame.slide.value = " ";
     this.frame.slide.style.position = "relative";

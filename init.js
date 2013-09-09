@@ -1,4 +1,5 @@
 var world = null;
+var collapse = false;
 
 $(window).load(function () {
 	initMenu();
@@ -28,9 +29,15 @@ function initMenu() {
         $(document).trigger('timelinegraphmode',[world]);
     });
 
-    $('#network-movement').click(function (event) {
+    $('#network-collapse').click(function (event) {
         event.preventDefault();
-        console.log('move!');
-        drawNetworkWithSampleMovements(world);
+        if (collapse == false) {
+            drawNetworkCollapsed(world);
+            collapse = true;
+        }
+        else {
+            drawNetworkExpanded(world);
+            collapse = false;
+        }
     })
 }

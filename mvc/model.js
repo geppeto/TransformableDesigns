@@ -159,10 +159,7 @@ RELATIONSHIP_CONSTANTS['WC'] = {'*': {  'kinetic': true,
                                      }
                                };
 
-var DAY_DURATION;
-var RANDOMNESS = 1.0;
 var calendar_url = 'https://www.google.com/calendar/feeds/e4im0nbrikcp500vh87geriabs%40group.calendar.google.com/public/full?alt=json&orderby=starttime';
-var adaptation_step = 2;
 
 Number.prototype.between = function (min, max) {
     return this >= min && this <= max;
@@ -686,6 +683,8 @@ var WORLD = Backbone.Model.extend({
 
     simulate: function () {
 
+        var ID = 0;
+
         // Create as many spaces as events
 
         var _ss = this.get('spaces');
@@ -701,6 +700,12 @@ var WORLD = Backbone.Model.extend({
             var _event = this.get('timeline').get('events').at(i);
             var _space = this.get('spaces').at(i);
             var _transformation = {};
+
+            // connect each event with its corresponding space
+            // by giving them the same ID attribute
+
+            _event.set('ID', ID);
+            _space.set('ID', ID);
 
             // all persons of an event enter the space
             // at the same time at the beginning of the event
@@ -718,6 +723,8 @@ var WORLD = Backbone.Model.extend({
             while(_space.removeRandomPerson()){}
             _transformation = _space.adapt();
             */
+
+            ID++;
 
             console.log('EVENT '+ i +' END');
         }

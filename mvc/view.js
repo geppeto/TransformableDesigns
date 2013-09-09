@@ -23,6 +23,7 @@
 //   Date	  Author	Description
 // -------------------------------------------------------------------------------------
 // 05/09/13    S.K      Created
+// 09/09/13    S.K      Threw KineticJS away in favor of CHAP libraries
 
 //================================================
 // CONTENTS:
@@ -83,13 +84,6 @@ $(document).on('calendarloaded timelinestandardmode', function(){
     var timeline = new links.Timeline(document.getElementById('timeline'));
     timeline.draw(data, options);
 
-    /*$('.timeline-event-range').css({"border": "solid",
-        "border-radius": "1px",
-        "height": "auto",
-        "width": "auto",
-        "position": "relative",
-        "overflow": "auto"});*/
-
     $(document).trigger('timelineloaded',[world]);
 });
 
@@ -147,14 +141,20 @@ $(document).on('timelinegraphmode',function(event,world){
 });
 
 $(document).on('simulationend',function(event, world){
+    drawNetworkExpanded(world);
+});
+
+function drawNetworkExpanded(world){
     console.log('draw START');
-    var groupID = 0;
+
     var subspaceID = 1000000;
     var nodes = [];
     var connections = [];
 
     world.get('spaces').forEach(function (space) {
-        space.set('groupID', groupID);
+
+        var groupID = space.get('ID');
+
         nodes.push({'id': groupID,
                     'group': groupID,
                     'text': space.get('activity'),
@@ -176,14 +176,17 @@ $(document).on('simulationend',function(event, world){
                                 'length': 30});
             subspaceID++;
         });
+    });
 
-        if (groupID != 0) {
-            connections.push({  'from': groupID,
-                                'to': groupID-1,
-                                'color': 'darkgray'});
-        }
-
-        groupID++;
+    world.get('spaces').forEach(function (space) {
+        world.get('spaces').forEach(function (spaceinner) {
+            if (spaceinner.get('activity') == space.get('activity') &&
+                spaceinner.get('ID') != space.get('ID')) {
+                connections.push({  'from': space.get('ID'),
+                    'to': spaceinner.get('ID'),
+                    'color': 'darkgray'});
+            }
+        });
     });
 
     var options = {
@@ -199,9 +202,77 @@ $(document).on('simulationend',function(event, world){
     network.draw(nodes,connections,options);
 
     links.events.addListener(network, 'select', function () {onselect(network,world,nodes);});
-
     console.log('draw END');
-});
+}
+
+function drawNetworkCollapsed(world){
+    console.log('draw START');
+
+    var nodes = [];
+    var connections = [];
+    var activities = [];
+
+    // we group the spaces by activity and we treat each
+    // group as one space that is created and modified
+
+    world.get('spaces').forEach(function (space) {
+        var activity = space.get('activity');
+        if (activities[activity] == undefined) {
+            activities[activity] = new Array(space);
+        }
+        else {
+            activities[activity].push(space);
+        }
+    });
+
+    // we create node entries for the drawn network
+    // one for every event. we just consider all
+    // spaces in an activity group to be UPDATEs
+    // to that activity's space size
+
+    for (var activity in activities) {
+
+        var activityspaces = activities[activity];
+
+        activityspaces.forEach(function (space) {
+            var spaceSize = space.get('subspaces').
+                map(function (ss) { return ss.get('width')*ss.get('depth'); /* TODO: ss.get('height') */}).
+                reduce(function (memo, num) { return memo+num;},0);
+            var timestamp = null;
+
+            // we get the timestamp from the corresponding event
+            // remember an event that corresponds to a space
+            // has the same ID attribute as that space
+
+            timestamp = world.get('timeline').
+                get('events').
+                findWhere({ID: space.get('ID')}).
+                get('start_time');
+
+            nodes.push({'id': activity,
+                        'action': 'update',
+                        'text': activity,
+                        'radius': Math.round(spaceSize),
+                        'timestamp': timestamp,
+                        'style': 'dot'});
+        });
+    }
+
+    var options = {
+        "width":  "100%",
+        "height": "350px",
+        "backgroundColor": {
+            "strokeWidth": 0
+        },
+        "stabilize": false
+    };
+
+    var network = new links.Network(document.getElementById('network'));
+    network.draw(nodes.reverse(),connections,options);
+
+    links.events.addListener(network, 'select', function () {onselect(network,world,nodes);});
+    console.log('draw END');
+}
 
 function drawNetworkWithSampleMovements (world){
     console.log('draw START');
@@ -305,3 +376,84 @@ var hsv2rgb = function(H, S, V) {
 
     return "RGB(" + parseInt(R*255) + "," + parseInt(G*255) + "," + parseInt(B*255) + ")";
 };
+
+/*
+
+ / /BACKUP THIS FUNCTION IN CASE NETWORK LIBRARY IS UPDATED (in network.js)
+
+ links.Network.Slider = function(container) {
+ if (container === undefined) throw "Error: No container element defined";
+
+ this.container = container;
+
+ this.frame = document.createElement("DIV");
+ //this.frame.style.backgroundColor = "#E5E5E5";
+ this.frame.style.width = "80%";
+ this.frame.style.position = "relative";
+
+ this.title = document.createElement("DIV");
+ this.title.className = "network-slider-title";
+ this.title.style.margin = "2px";
+ this.title.style.marginBottom = "5px";
+ this.title.innerHTML = "";
+ this.container.appendChild(this.title);
+
+ this.frame.prev = document.createElement("i");
+ this.frame.prev.className = "network-slider-prev btn icon-backward";
+ this.frame.appendChild(this.frame.prev);
+
+ this.frame.play = document.createElement("i");
+ this.frame.play.className = "network-slider-play btn icon-play";
+ this.frame.appendChild(this.frame.play);
+
+ this.frame.next = document.createElement("i");
+ this.frame.next.className = "network-slider-next btn icon-forward";
+ this.frame.appendChild(this.frame.next);
+
+ this.frame.bar = document.createElement("INPUT");
+ this.frame.bar.type = "BUTTON";
+ this.frame.bar.className = "network-slider-bar";
+ this.frame.bar.style.position = "absolute";
+ this.frame.bar.style.border = "1px solid red";
+ this.frame.bar.style.width = "100px";
+ this.frame.bar.style.height = "6px";
+ this.frame.bar.style.borderRadius = "2px";
+ this.frame.bar.style.MozBorderRadius = "2px";
+ this.frame.bar.style.border = "1px solid #7F7F7F";
+ this.frame.bar.style.backgroundColor = "#E5E5E5";
+ this.frame.appendChild(this.frame.bar);
+
+ this.frame.slide = document.createElement("INPUT");
+ this.frame.slide.type = "BUTTON";
+ this.frame.slide.className = "network-slider-slide";
+ this.frame.slide.style.margin = "0px";
+ this.frame.slide.value = " ";
+ this.frame.slide.style.position = "relative";
+ this.frame.slide.style.left = "-100px";
+ this.frame.appendChild(this.frame.slide);
+
+ // create events
+ var me = this;
+ this.frame.slide.onmousedown = function (event) {me._onMouseDown(event);};
+ this.frame.prev.onclick = function (event) {me.prev(event);};
+ this.frame.play.onclick = function (event) {me.togglePlay(event);};
+ this.frame.next.onclick = function (event) {me.next(event);};
+
+ this.container.appendChild(this.frame);
+
+ this.onChangeCallback = undefined;
+
+ this.playTimeout = undefined;
+ this.framerate = 20; // frames per second
+ this.duration = 10; // seconds
+ this.doLoop = true;
+
+ this.start = 0;
+ this.end = 0;
+ this.value = 0;
+ this.step = 0;
+ this.rangeIsDate = false;
+
+ this.redraw();
+ };
+*/
