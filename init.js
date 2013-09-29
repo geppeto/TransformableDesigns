@@ -1,11 +1,16 @@
 var world = null;
 var collapse = false;
+var snapper = null;
 
 $(window).load(function () {
-	initMenu();
+
+    initEvents();
+
+    snapper = new Snap({element: document.getElementById('content'), disable: 'left', touchToDrag: false, tapToClose: false});
+
 });
 
-function initMenu() {
+function initEvents() {
 
     $('#calendar').click(function () {
         world = new WORLD();
@@ -39,5 +44,9 @@ function initMenu() {
             drawNetworkExpanded(world);
             collapse = false;
         }
+    });
+
+    $('#info-drawer-close').click(function (event) {
+        snapper.close();
     })
 }

@@ -76,7 +76,7 @@ $(document).on('calendarloaded timelinestandardmode', function(){
 
     var options = {
         "width":  "100%",
-        "height": "200px",
+        "height": "250px",
         "editable": true
     };
 
@@ -343,17 +343,13 @@ function drawNetworkWithSampleMovements (world){
 
 function onselect (network,world,nodes) {
 
-    $.magnificPopup.open({
-        items: {
-            src: '<div class="white-popup  mfp-with-anim">hello there</div>',
-            type: 'inline'
-        },
-        removalDelay: 500,
-        mainClass: 'mfp-fade',
-        closeBtnInside: true,
-        midClick: true
-    });
+    snapper.open('right');
+    var sel = network.getSelection();
 
+    var info = 'selected row(s): ';
+    info += sel[0].row + ' ';
+
+    $('#info-drawer-content').text(info);
 }
 
 var hsv2rgb = function(H, S, V) {

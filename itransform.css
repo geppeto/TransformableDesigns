@@ -83,6 +83,9 @@ html,body {-webkit-backface-visibility:hidden;}
 #container {
     width: 100%;
 }
+#content {
+    background: white;
+}
 
 #network {
     width:90%;
@@ -108,20 +111,30 @@ html,body {-webkit-backface-visibility:hidden;}
     border: none!important;
 }
 
-#info {
-    width: 20%;
-    height: 350px;
-    margin-right: 0px;
-    display: block;
-    float:right;
+#info-drawer {
+    background: slategray;
 }
 
-#info h1 {
+#info-drawer h1 {
     font-family: 'Open Sans',sans-serif;
-    font-size: 26px;
-    margin-top: 20px;
+    font-size: 20px;
+    margin-top: 12px;
     margin-bottom: 20px;
+    color: darkslategrey;
+    width: 100%;
+    text-align: center;
+}
 
+#info-drawer-close {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    color: darkslategrey;
+    cursor: pointer;
+}
+
+#info-drawer-close:hover {
+    color: whitesmoke;
 }
 
 #timeline-toolbar {
@@ -162,6 +175,14 @@ div.timeline-axis-text {
 
 div.timeline-axis-text-major {
     font-weight: bold;
+}
+
+div.timeline-groups-text {
+    font-family: 'Open Sans',sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    padding-top: 12px;
+    color: #7C7C7C;
 }
 
 div.bar {

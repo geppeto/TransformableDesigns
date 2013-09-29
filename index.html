@@ -11,6 +11,7 @@
         <script src="constraintjs/cjs.js" type="text/javascript"></script>
         <script src="graphics/network.js" type="text/javascript"></script>
         <script src="graphics/jquery.magnific-popup.min.js" type="text/javascript"></script>
+        <script src="graphics/snap.js" type="text/javascript"></script>
         <script src="mvc/underscore.js" type="text/javascript"></script>
         <script src="mvc/backbone.js" type="text/javascript"></script>
         <script src="mvc/model.js" type="text/javascript"></script>
@@ -24,33 +25,48 @@
         <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,700italic,800italic,400,600,700,800' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" type="text/css" href="timeline/timeline.css">
         <link rel="stylesheet" type="text/css" href="graphics/magnific-popup.css" />
+        <link rel="stylesheet" type="text/css" href="graphics/snap.css" />
         <link rel="stylesheet" type="text/css" href="itransform.css" />
     </head>
 
     <body>
-  	    <div id="header">
 
-            <i id="menu" class="icon-cog mfp-with-anim"></i>
-            <i id="calendar" class="icon-calendar"></i>
-            <i id="simulate" class="icon-play"></i>
+        <div id="info-drawer" class="snap-drawer snap-drawer-right">
+            <i id="info-drawer-close" class="icon-remove"></i>
+            <div id="info-drawer-graph"></div>
+            <div id="info-drawer-content"></div>
+        </div>
 
-  		    <div id="title"><span>T</span>ransformable <span>D</span>esigns</div>
+        <div id="content" class="snap-content">
+            <div id="header">
 
-  	    </div>
-  	
-	    <div id="main">
-		    <div id="container">
-                <div id="network"></div>
-                <div id="timeline-toolbar">
-                    <div class="btn-group">
-                        <a class="btn" href="#" id="network-collapse"><i class="icon-bullseye"></i></a>
-                        <a class="btn" href="#" id="timeline-standardmode"><i class="icon-align-left"></i></a>
-                        <a class="btn" href="#" id="timeline-graphmode"><i class="icon-bar-chart"></i></a>
+                <i id="menu" class="icon-cog mfp-with-anim"></i>
+                <i id="calendar" class="icon-calendar"></i>
+                <i id="simulate" class="icon-play"></i>
+
+                <div id="title"><span>T</span>ransformable <span>D</span>esigns</div>
+
+            </div>
+
+            <div id="main">
+
+                <div id="container">
+
+                    <div id="network"></div>
+
+                    <div id="timeline-toolbar">
+                        <div class="btn-group">
+                            <a class="btn" href="#" id="network-collapse"><i class="icon-bullseye"></i></a>
+                            <a class="btn" href="#" id="timeline-standardmode"><i class="icon-align-left"></i></a>
+                            <a class="btn" href="#" id="timeline-graphmode"><i class="icon-bar-chart"></i></a>
+                        </div>
                     </div>
+
+                    <div id="timeline"></div>
+
                 </div>
-                <div id="timeline"></div>
-		    </div>
-	    </div>
+            </div>
+        </div>
     </body>
 
 </html>

@@ -146,6 +146,183 @@ ACTIVITY_CONSTANTS['sleeping'] = {'population': {'1-10': {w:1.2, d:2.0, h:2.0},
                                                       'flexible':true
                                                       }
                                  };
+
+ACTIVITY_CONSTANTS['cooking'] = {  'population': { '1-10': {w:2.0, d:2.0, h:2.2},
+                                                    '11-50': {w:1.9, d:1.9, h:2.5},
+                                                    '51-200': {w:1.7, d:1.7, h:3.5},
+                                                    '201-500': {w:1.5, d:1.5, h:4.5},
+                                                    '501-1000': {w:1.5, d:1.5, h:4.5},
+                                                    '1000+': {w:1.5, d:1.5, h:4.5}
+                                },
+                                    'mobility': true,
+                                    'flexible': true,
+                                    'position': true,
+                                    'age': {'1-3': {w:0.5, d:0.5, h:0.5}, // TODO: specs say N/A
+                                        '4-8': {w:0.5, d:0.5, h:0.5},
+                                        '9-13': {w:0.6, d:0.6, h:0.7},
+                                        '14-18': {w:0.9, d: 0.9, h:1.0},
+                                        '19-25': {w:1.0, d: 1.0, h:1.0},
+                                        '26-35': {w:1.0, d: 1.0, h:1.0},
+                                        '36-50': {w:1.0, d: 1.0, h:1.0},
+                                        '51-65': {w:1.1, d: 1.1, h:1.0},
+                                        '65+': {w:1.2, d: 1.2, h:1.0}
+                                    },
+                                    'sex': true,
+                                    'space': {'lighting': ['high', 'very high'],
+                                        'ventilation': ['very high'],
+                                        'transparency': ['very low', 'low', 'medium', 'high', 'very high'],
+                                        'privacy': ['low', 'medium', 'high', 'very high'],
+                                        'sound volume': ['low', 'medium', 'high'],
+                                        'warmth': ['very low', 'low', 'medium', 'high'],
+                                        'temperature moisture': ['very low', 'low', 'medium'],
+                                        'openness': ['very low', 'low', 'medium', 'high', 'very high'],
+                                        'tactility': ['medium', 'high', 'very high'],
+                                        'softness': ['very low', 'low'],
+                                        'color': ['intense colors', 'focus colors', 'contrast'],
+                                        'current activity intensity': ['medium', 'high'],
+                                        'stance': ['standing up', 'sitting high']
+                                    },
+                                    'relationship': {'kinetic':true,
+                                        'visual':true,
+                                        'aural':true,
+                                        'distance': ['attached', 'interwined'],
+                                        'interrupted': false,
+                                        'flexible':true
+                                    }
+};
+
+ACTIVITY_CONSTANTS['leisure'] = {  'population': { '1-10': {w:2.5, d:2.5, h:2.9},
+                                                    '11-50': {w:2.2, d:2.2, h:3.5},
+                                                    '51-200': {w:2.0, d:2.0, h:4.5},
+                                                    '201-500': {w:1.8, d:1.8, h:6.0},
+                                                    '501-1000': {w:1.6, d:1.6, h:8.0},
+                                                    '1000+': {w:1.4, d:1.4, h:11}
+                                },
+                                    'mobility': true,
+                                    'flexible': true,
+                                    'position': true,
+                                    'age': {'1-3': {w:0.5, d:0.5, h:0.5},
+                                        '4-8': {w:1.3, d:1.3, h:0.7},
+                                        '9-13': {w:1.6, d:1.6, h:0.9},
+                                        '14-18': {w:1.9, d: 1.9, h:1.0},
+                                        '19-25': {w:1.7, d: 1.7, h:1.0},
+                                        '26-35': {w:1.3, d: 1.3, h:1.0},
+                                        '36-50': {w:1.0, d: 1.0, h:1.0},
+                                        '51-65': {w:0.8, d: 0.8, h:1.0},
+                                        '65+': {w:0.4, d: 0.4, h:1.0}
+                                    },
+                                    'sex': true,
+                                    'space': {'lighting': ['low', 'medium', 'high', 'very high'],
+                                        'ventilation': ['high', 'very high'],
+                                        'transparency': ['very low', 'low', 'medium', 'high', 'very high'],
+                                        'privacy': ['medium', 'high', 'very high'],
+                                        'sound volume': ['high', 'very high'],
+                                        'warmth': ['very low', 'low', 'medium', 'high'],
+                                        'temperature moisture': ['very low', 'low', 'medium'],
+                                        'openness': ['very low', 'low', 'medium', 'high', 'very high'],
+                                        'tactility': ['very low', 'low', 'medium'],
+                                        'softness': ['very low', 'low', 'medium'],
+                                        'color': ['intense colors', 'fun colors', 'changing colors'],
+                                        'current activity intensity': ['medium', 'high', 'very high'],
+                                        'stance': ['standing up', 'sitting low', 'sitting high', 'lying down']
+                                    },
+                                    'relationship': {'kinetic':true,
+                                        'visual':true,
+                                        'aural':true,
+                                        'distance': ['interwined'],
+                                        'interrupted': false,
+                                        'flexible':true
+                                    }
+};
+
+ACTIVITY_CONSTANTS['eating'] = {  'population': { '1-10': {w:1.3, d:1.3, h:2.3},
+                                                    '11-50': {w:1.2, d:1.2, h:2.7},
+                                                    '51-200': {w:1.1, d:1.1, h:3.5},
+                                                    '201-500': {w:1.0, d:1.0, h:4.5},
+                                                    '501-1000': {w:1.0, d:1.0, h:5.5},
+                                                    '1000+': {w:0.9, d:0.9, h:7.0}
+                                },
+                                    'mobility': true,
+                                    'flexible': true,
+                                    'position': true,
+                                    'age': {'1-3': {w:0.4, d:0.4, h:0.6},
+                                        '4-8': {w:0.6, d:0.6, h:0.7},
+                                        '9-13': {w:0.9, d:0.9, h:0.9},
+                                        '14-18': {w:1.0, d: 1.0, h:1.0},
+                                        '19-25': {w:1.0, d: 1.0, h:1.0},
+                                        '26-35': {w:1.0, d: 1.0, h:1.0},
+                                        '36-50': {w:1.0, d: 1.0, h:1.0},
+                                        '51-65': {w:0.9, d: 0.9, h:1.0},
+                                        '65+': {w:0.8, d: 0.8, h:1.0}
+                                    },
+                                    'sex': true,
+                                    'space': {'lighting': ['low', 'medium', 'high'],
+                                        'ventilation': ['medium', 'high'],
+                                        'transparency': ['very low', 'low', 'medium', 'high', 'very high'],
+                                        'privacy': ['very low', 'low', 'medium', 'high', 'very high'],
+                                        'sound volume': ['high', 'very high'],
+                                        'warmth': ['very low', 'low'],
+                                        'temperature moisture': ['low', 'medium'],
+                                        'openness': ['very low', 'low', 'medium', 'high', 'very high'],
+                                        'tactility': ['medium', 'high'],
+                                        'softness': ['low', 'medium', 'high'],
+                                        'color': ['hunger colors', 'thirst colors', 'fun colors'],
+                                        'current activity intensity': ['low', 'medium'],
+                                        'stance': ['standing up', 'sitting low', 'sitting high']
+                                    },
+                                    'relationship': {'kinetic':true,
+                                        'visual':true,
+                                        'aural':false,
+                                        'distance': ['detached', 'attached','interwined'],
+                                        'interrupted': false,
+                                        'flexible':true
+                                    }
+};
+
+ACTIVITY_CONSTANTS['working'] = {  'population': { '1-10': {w:1.3, d:1.6, h:2.3},
+                                                '11-50': {w:1.2, d:1.5, h:2.7},
+                                                '51-200': {w:1.1, d:1.3, h:3.5},
+                                                '201-500': {w:0.9, d:1.1, h:4.5},
+                                                '501-1000': {w:0.8, d:1.0, h:5.5},
+                                                '1000+': {w:0.6, d:0.9, h:7.0}
+                                },
+                                    'mobility': true,
+                                    'flexible': true,
+                                    'position': true,
+                                    'age': {'1-3': {w:0.4, d:0.4, h:0.6},  // TODO N/A children don't work
+                                        '4-8': {w:0.6, d:0.6, h:0.7},
+                                        '9-13': {w:0.9, d:0.9, h:0.9},
+                                        '14-18': {w:1.0, d: 1.0, h:1.0},
+                                        '19-25': {w:1.0, d: 1.0, h:1.0},
+                                        '26-35': {w:1.1, d: 1.1, h:1.1},
+                                        '36-50': {w:1.2, d: 1.2, h:1.2},
+                                        '51-65': {w:1.0, d: 1.0, h:1.0},
+                                        '65+': {w:0.8, d: 0.8, h:1.0}
+                                    },
+                                    'sex': true,
+                                    'space': {'lighting': ['medium', 'high', 'very high'],
+                                        'ventilation': ['low', 'medium', 'high'],
+                                        'transparency': ['very low', 'low', 'medium'],
+                                        'privacy': ['medium', 'high', 'very high'],
+                                        'sound volume': ['very low', 'low', 'medium', 'high', 'very high'],
+                                        'warmth': ['very low', 'low', 'medium'],
+                                        'temperature moisture': ['low', 'medium'],
+                                        'openness': ['very low', 'low'],
+                                        'tactility': ['very low', 'low'],
+                                        'softness': ['very low'],
+                                        'color': ['focus colors'],
+                                        'current activity intensity': ['very low', 'low', 'medium', 'high'],
+                                        'stance': ['standing up', 'sitting low', 'sitting high']
+                                    },
+                                    'relationship': {'kinetic':true,
+                                        'visual':false,
+                                        'aural':false,
+                                        'distance': ['detached', 'attached','interwined'],
+                                        'interrupted': true,
+                                        'flexible':true
+                                    }
+};
+
 var RELATIONSHIP_CONSTANTS = {};
 
 RELATIONSHIP_CONSTANTS['socializing'] = {'cooking': {}};
@@ -160,6 +337,7 @@ RELATIONSHIP_CONSTANTS['WC'] = {'*': {  'kinetic': true,
                                };
 
 var calendar_url = 'https://www.google.com/calendar/feeds/e4im0nbrikcp500vh87geriabs%40group.calendar.google.com/public/full?alt=json&orderby=starttime';
+//var calendar_url = 'https://www.google.com/calendar/feeds/8cril4fdd9vcjecngrkr062g24%40group.calendar.google.com/public/full?alt=json&orderby=starttime&start-max=2013-12-16';
 
 Number.prototype.between = function (min, max) {
     return this >= min && this <= max;
