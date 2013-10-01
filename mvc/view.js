@@ -147,7 +147,6 @@ $(document).on('simulationend',function(event, world){
 function drawNetworkExpanded(world){
     console.log('draw START');
 
-    var subspaceID = 1000000;
     var nodes = [];
     var connections = [];
 
@@ -158,23 +157,22 @@ function drawNetworkExpanded(world){
         nodes.push({'id': groupID,
                     'group': groupID,
                     'text': space.get('activity'),
-                    'value': space.get('subspaces').length,
+                    'radius': 20,
                     'style': 'dot'});
 
         space.get('subspaces').forEach(function (subspace) {
-            subspace.set('subspaceID', subspaceID);
-            nodes.push({'id': subspaceID,
+
+            nodes.push({'id': subspace.get('ID'),
                         'text': subspace.get('age'),
                         'group': groupID,
                         'fontColor': 'darkgray',
                         'value': subspace.get('persons').length,
                         'style': 'dot'});
-            connections.push({  'from': subspaceID,
+            connections.push({  'from': subspace.get('ID'),
                                 'to': groupID,
                                 'color': 'lightgray',
                                 'style': 'line',
                                 'length': 30});
-            subspaceID++;
         });
     });
 
@@ -191,7 +189,7 @@ function drawNetworkExpanded(world){
 
     var options = {
         "width":  "100%",
-        "height": "350px",
+        "height": "100%",
         "backgroundColor": {
             "strokeWidth": 0
         },
@@ -253,6 +251,8 @@ function drawNetworkCollapsed(world){
                         'action': 'update',
                         'text': activity,
                         'radius': Math.round(spaceSize),
+                        'backgroundColor': 'salmon',
+                        'borderColor': 'lightsalmon',
                         'timestamp': timestamp,
                         'style': 'dot'});
         });
@@ -260,7 +260,7 @@ function drawNetworkCollapsed(world){
 
     var options = {
         "width":  "100%",
-        "height": "350px",
+        "height": ($(window).height() - 250)+"px",
         "backgroundColor": {
             "strokeWidth": 0
         },
@@ -343,13 +343,70 @@ function drawNetworkWithSampleMovements (world){
 
 function onselect (network,world,nodes) {
 
-    snapper.open('right');
+    $('#info-drawer').animate({left: '0px'},100);
+
     var sel = network.getSelection();
+    var info = '';
+    var space = world.get('spaces').findWhere({ID: nodes[sel[0].row].id});
 
-    var info = 'selected row(s): ';
-    info += sel[0].row + ' ';
+    if ( space == undefined ){
 
-    $('#info-drawer-content').text(info);
+        // node is a subspace
+
+        var subspace = undefined;
+        world.get('spaces').forEach(function (space) {
+            var _subspace = space.get('subspaces').findWhere({ID: nodes[sel[0].row].id});
+            subspace = _subspace != undefined? _subspace: subspace;
+        })
+
+        $('#info-space').hide();
+        $('#info-subspace').show();
+        $('#info-width').text(Math.round(subspace.get('width')));
+        $('#info-depth').text(Math.round(subspace.get('depth')));
+        $('#info-height').text(Math.round(subspace.get('height')));
+        $('#info-area').text(Math.round(subspace.get('width')*subspace.get('depth')));
+        $('#info-population').text(subspace.get('persons').length);
+        $('#info-age').text(subspace.get('age'));
+    }
+    else {
+        var population = space.get('subspaces')
+            .map(function(ss){ return ss.get('persons').length;})
+            .reduce(function (memo, num) { return memo + num; },0);
+
+        $('#info-space').show();
+        $('#info-subspace').hide();
+        $('#info-width').text(Math.round(space.get('width')));
+        $('#info-depth').text(Math.round(space.get('depth')));
+        $('#info-height').text(Math.round(space.get('height')));
+        $('#info-area').text(Math.round(space.get('width')*space.get('depth')));
+        $('#info-population').text(population);
+        $('#info-activity').text(space.get('activity'));
+        $('#info-color').text(space.get('color'));
+        $('#info-stance').text(space.get('stance'));
+        $('.info-bar').each(function () {
+            var quality = $(this).attr('id').replace('info-','');
+            var quality_value = qualityValueToNumber(space.get(quality));
+            var barwidth = (quality_value * 20) + '%';
+            $(this).animate({width: barwidth}, 2000, function () {});
+        });
+    }
+}
+
+function qualityValueToNumber (value) {
+    switch (value) {
+        case 'very low':
+            return 1;
+        case 'low':
+            return 2;
+        case 'medium':
+            return 3;
+        case 'high':
+            return 4;
+        case 'very high':
+            return 5;
+        default:
+            return 0;
+    }
 }
 
 var hsv2rgb = function(H, S, V) {

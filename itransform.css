@@ -22,12 +22,15 @@ time, mark, audio, video {
 html,body {-webkit-backface-visibility:hidden;}
 
 #header {
-	margin-top: 20px;
+    position: absolute;
+	top: 0px;
+    height: 40px;
+    width: 100%;
     padding-bottom: 20px;
     -webkit-box-shadow: 0px 3px 10px -6px rgba(50, 50, 50, 0.59);
     -moz-box-shadow:    0px 3px 10px -6px rgba(50, 50, 50, 0.59);
     box-shadow:         0px 3px 10px -6px rgba(50, 50, 50, 0.59);
-	width: 100%;
+	background: rgba(255,255,255,0.4);
 	-webkit-font-smoothing: subpixel-antialiased !important;
     z-index: 3;
 }
@@ -40,6 +43,7 @@ html,body {-webkit-backface-visibility:hidden;}
 	font-weight: 400;
 	color: #222;
 	display: block;
+    padding-top: 18px;
     text-transform: uppercase;
 }
 
@@ -49,7 +53,7 @@ html,body {-webkit-backface-visibility:hidden;}
 
 #menu, #simulate, #calendar {
     position: absolute;
-    margin-top: 10px;
+    margin-top: 20px;
     margin-right: 40px;
     right: 0px;
     color: black;
@@ -88,13 +92,15 @@ html,body {-webkit-backface-visibility:hidden;}
 }
 
 #network {
-    width:90%;
+    width:100%;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 8px;
-    height: 350px;
+    height: 100%;
     display: block;
     background: white;
+    position: absolute;
+    top: 0px;
+    z-index: 0;
 }
 
 .network-slider-title {
@@ -112,7 +118,15 @@ html,body {-webkit-backface-visibility:hidden;}
 }
 
 #info-drawer {
-    background: slategray;
+    position: absolute;
+    left: -250px;
+    height: 100%;
+    width: 250px;
+    background: rgba(255,255,255,0.7);
+    -webkit-box-shadow: 5px 0px 5px rgba(50, 50, 50, 0.45);
+    -moz-box-shadow:    5px 0px 5px rgba(50, 50, 50, 0.45);
+    box-shadow:         5px 0px 5px rgba(50, 50, 50, 0.45);
+    z-index: 10;
 }
 
 #info-drawer h1 {
@@ -137,13 +151,75 @@ html,body {-webkit-backface-visibility:hidden;}
     color: whitesmoke;
 }
 
+#info-drawer-content {
+    width: 85%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+}
+
+#info-drawer h2 {
+    width: 280px;
+    line-height: 150%;
+    font-size: 12px;
+    word-wrap: break-word;
+    padding-right: 10px;
+    font-family: 'Open Sans', Arial, sans-serif;
+    font-weight: 700;
+}
+
+#info-drawer h3 {
+    width: 120px;
+    float: left;
+    font-size: 12px;
+    line-height: 150%;
+    word-wrap: break-word;
+    padding-right: 10px;
+    color: lightgray;
+    font-family: 'Open Sans', Arial, sans-serif;
+    font-weight: 700;
+}
+
+.info-value {
+    font-family: 'Open Sans', Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    color: #706f6f;
+    text-transform: uppercase;
+}
+
+.info-chart {
+    margin-top: 15px;
+    border-top: 1px solid #ccc;
+    display: inline-block;
+    height: 1px;
+    content: " ";
+    width: 100%;
+    position: relative;
+    left: 0;
+    top: -8px;
+}
+
+.info-bar {
+    display: inline-block;
+    width: 60%;
+    position: absolute;
+    left: 0;
+    top: -6px;
+    background-color: black;
+    height: 12px;
+    moz-border-radius: 300px 300px 300px 300px;
+    -webkit-border-radius: 300px 300px 300px 300px;
+    border-radius: 300px 300px 300px 300px;
+}
+
 #timeline-toolbar {
     position:absolute;
     width: 100px;
     height: 40px;
     display: block;
     right: 40px;
-    margin-top: -40px;
+    bottom: 250px;
 }
 
 #timeline {
@@ -151,6 +227,9 @@ html,body {-webkit-backface-visibility:hidden;}
     height: 250px;
     background: #F5F5F5;
     clear:both;
+    z-index: 1;
+    position: absolute;
+    bottom: 0px;
 }
 
 div.timeline-event {

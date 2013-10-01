@@ -1,12 +1,10 @@
 var world = null;
 var collapse = false;
-var snapper = null;
+var ID = 0;
 
 $(window).load(function () {
 
     initEvents();
-
-    snapper = new Snap({element: document.getElementById('content'), disable: 'left', touchToDrag: false, tapToClose: false});
 
 });
 
@@ -47,6 +45,6 @@ function initEvents() {
     });
 
     $('#info-drawer-close').click(function (event) {
-        snapper.close();
+        $('#info-drawer').animate({left: '-250px'}, 100);
     })
 }

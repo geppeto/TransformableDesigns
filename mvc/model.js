@@ -58,6 +58,10 @@
 //  0. GLOBAL VARIABLES
 // =================================================
 
+var QUALITIES = ['lighting','ventilation','transparency','privacy','soundvolume',
+                'warmth', 'moisture', 'openness', 'tactility',
+                'softness', 'color', 'intensity', 'stance'];
+
 var ACTIVITY_CONSTANTS = {};
 ACTIVITY_CONSTANTS['socializing'] = {'population': {'1-10': {w:1.5, d:1.5, h:2.6},
                                                     '11-50': {w:1.3, d:1.3, h:3.0},
@@ -84,14 +88,14 @@ ACTIVITY_CONSTANTS['socializing'] = {'population': {'1-10': {w:1.5, d:1.5, h:2.6
                                                'ventilation': ['medium', 'high', 'very high'],
                                                'transparency': ['very low', 'low', 'medium'],
                                                'privacy': ['very low', 'low'],
-                                               'sound volume': ['medium', 'high', 'very high'],
+                                               'soundvolume': ['medium', 'high', 'very high'],
                                                'warmth': ['medium', 'high', 'very high'],
-                                               'temperature moisture': ['low', 'medium'],
+                                               'moisture': ['low', 'medium'],
                                                'openness': ['medium', 'high', 'very high'],
                                                'tactility': ['very low', 'low', 'medium'],
                                                'softness': ['low', 'medium', 'high', 'very high'],
                                                'color': ['adrenaline'], // ???
-                                               'current activity intensity': ['very low', 'low', 'fast', 'very fast'], // ???
+                                               'intensity': ['very low', 'low', 'high', 'very high'], // ???
                                                'stance': ['standing up', 'sitting low', 'sitting high', 'lying down']
                                                },
                                      'relationship': {'kinetic':true,
@@ -128,14 +132,14 @@ ACTIVITY_CONSTANTS['sleeping'] = {'population': {'1-10': {w:1.2, d:2.0, h:2.0},
                                                'ventilation': ['very low', 'low'],
                                                'transparency': ['very low', 'low'],
                                                'privacy': ['high', 'very high'],
-                                               'sound volume': ['very low', 'low'],
+                                               'soundvolume': ['very low', 'low'],
                                                'warmth': ['high', 'very high'],
-                                               'temperature moisture': ['low', 'medium'],
+                                               'moisture': ['low', 'medium'],
                                                'openness': ['very low', 'low', 'medium', 'high', 'very high'],
                                                'tactility': ['high', 'very high'],
                                                'softness': ['medium', 'high', 'very high'],
                                                'color': ['soothing'], // ???
-                                               'current activity intensity': ['very low'], // ???
+                                               'intensity': ['very low'], // ???
                                                'stance': ['sitting low', 'lying down']
                                                },
                                    'relationship': {'kinetic':true,
@@ -172,14 +176,14 @@ ACTIVITY_CONSTANTS['cooking'] = {  'population': { '1-10': {w:2.0, d:2.0, h:2.2}
                                         'ventilation': ['very high'],
                                         'transparency': ['very low', 'low', 'medium', 'high', 'very high'],
                                         'privacy': ['low', 'medium', 'high', 'very high'],
-                                        'sound volume': ['low', 'medium', 'high'],
+                                        'soundvolume': ['low', 'medium', 'high'],
                                         'warmth': ['very low', 'low', 'medium', 'high'],
-                                        'temperature moisture': ['very low', 'low', 'medium'],
+                                        'moisture': ['very low', 'low', 'medium'],
                                         'openness': ['very low', 'low', 'medium', 'high', 'very high'],
                                         'tactility': ['medium', 'high', 'very high'],
                                         'softness': ['very low', 'low'],
                                         'color': ['intense colors', 'focus colors', 'contrast'],
-                                        'current activity intensity': ['medium', 'high'],
+                                        'intensity': ['medium', 'high'],
                                         'stance': ['standing up', 'sitting high']
                                     },
                                     'relationship': {'kinetic':true,
@@ -216,14 +220,14 @@ ACTIVITY_CONSTANTS['leisure'] = {  'population': { '1-10': {w:2.5, d:2.5, h:2.9}
                                         'ventilation': ['high', 'very high'],
                                         'transparency': ['very low', 'low', 'medium', 'high', 'very high'],
                                         'privacy': ['medium', 'high', 'very high'],
-                                        'sound volume': ['high', 'very high'],
+                                        'soundvolume': ['high', 'very high'],
                                         'warmth': ['very low', 'low', 'medium', 'high'],
-                                        'temperature moisture': ['very low', 'low', 'medium'],
+                                        'moisture': ['very low', 'low', 'medium'],
                                         'openness': ['very low', 'low', 'medium', 'high', 'very high'],
                                         'tactility': ['very low', 'low', 'medium'],
                                         'softness': ['very low', 'low', 'medium'],
                                         'color': ['intense colors', 'fun colors', 'changing colors'],
-                                        'current activity intensity': ['medium', 'high', 'very high'],
+                                        'intensity': ['medium', 'high', 'very high'],
                                         'stance': ['standing up', 'sitting low', 'sitting high', 'lying down']
                                     },
                                     'relationship': {'kinetic':true,
@@ -260,14 +264,14 @@ ACTIVITY_CONSTANTS['eating'] = {  'population': { '1-10': {w:1.3, d:1.3, h:2.3},
                                         'ventilation': ['medium', 'high'],
                                         'transparency': ['very low', 'low', 'medium', 'high', 'very high'],
                                         'privacy': ['very low', 'low', 'medium', 'high', 'very high'],
-                                        'sound volume': ['high', 'very high'],
+                                        'soundvolume': ['high', 'very high'],
                                         'warmth': ['very low', 'low'],
-                                        'temperature moisture': ['low', 'medium'],
+                                        'moisture': ['low', 'medium'],
                                         'openness': ['very low', 'low', 'medium', 'high', 'very high'],
                                         'tactility': ['medium', 'high'],
                                         'softness': ['low', 'medium', 'high'],
                                         'color': ['hunger colors', 'thirst colors', 'fun colors'],
-                                        'current activity intensity': ['low', 'medium'],
+                                        'intensity': ['low', 'medium'],
                                         'stance': ['standing up', 'sitting low', 'sitting high']
                                     },
                                     'relationship': {'kinetic':true,
@@ -304,14 +308,14 @@ ACTIVITY_CONSTANTS['working'] = {  'population': { '1-10': {w:1.3, d:1.6, h:2.3}
                                         'ventilation': ['low', 'medium', 'high'],
                                         'transparency': ['very low', 'low', 'medium'],
                                         'privacy': ['medium', 'high', 'very high'],
-                                        'sound volume': ['very low', 'low', 'medium', 'high', 'very high'],
+                                        'soundvolume': ['very low', 'low', 'medium', 'high', 'very high'],
                                         'warmth': ['very low', 'low', 'medium'],
-                                        'temperature moisture': ['low', 'medium'],
+                                        'moisture': ['low', 'medium'],
                                         'openness': ['very low', 'low'],
                                         'tactility': ['very low', 'low'],
                                         'softness': ['very low'],
                                         'color': ['focus colors'],
-                                        'current activity intensity': ['very low', 'low', 'medium', 'high'],
+                                        'intensity': ['very low', 'low', 'medium', 'high'],
                                         'stance': ['standing up', 'sitting low', 'sitting high']
                                     },
                                     'relationship': {'kinetic':true,
@@ -455,15 +459,15 @@ var SPACE = OBJECT.extend({
 		ventilation: null, // [very low, low, medium, high, very high]
 		transparency: null, // [very low, low, medium, high, very high]
 		privacy: null, // [very low, low, medium, high, very high]
-		sound_volume: null, // [very low, low, medium, high, very high]
+		soundvolume: null, // [very low, low, medium, high, very high]
 		warmth: null, // (cozy to cool) [very low, low, medium, high, very high]
-		temperature_moisture: null, //  [very low, low, medium, high, very high]
+		moisture: null, //  [very low, low, medium, high, very high]
 		openness: null, // [very low, low, medium, high, very high]
 		tactility: null, // [very low, low, medium, high, very high]
 		soft: null, // [very low, low, medium, high, very high]
 		color: null, // [red, green, blue, yellow, magenta, cyan, black, white]
 		activity: null, // [socializing, fornicating, sleeping, cooking, reading, leisure, eating, wc, working]
-		current_activity_intensity: null, // [very low, low, medium, fast, very fast]
+		intensity: null, // [very low, low, medium, fast, very fast]
 		stance: null, // [standing up, sitting low, sitting high, lying down]
 		subspaces: null // holds PERSON instances in an age indexed associative array {'1-10': [object, object], '20-50':....}
 	},
@@ -521,7 +525,7 @@ var SPACE = OBJECT.extend({
         // Subspace for this age group does not exist or no space is empty
 		if ( (this.get('subspaces').length == 0) || (this.get('subspaces').get(agecat) == undefined) ) {
 			console.log('! subspace bucket created ['+agecat+']');
-			var _ss = new SUBSPACE({age: agecat});
+			var _ss = new SUBSPACE({age: agecat, ID: ++ID});
 			_ss.get('persons').add(person);
 			this.get('subspaces').add(_ss);
 		}
@@ -584,18 +588,21 @@ var SPACE = OBJECT.extend({
 		console.log('//////////////////////////////////');
 	},
 
-	printSpace: function () {
+	info: function () {
 		var totalpopulation = this.get('subspaces')
 							.map(function(ss){ return ss.get('persons').length;})
 							.reduce(function (memo, num) { return memo + num; },0);
 
-		console.log('///////////// SPACES /////////////');
-		console.log('Total : '+totalpopulation);
-		console.log('');
+        var info = '';
+		info += '///////////// SPACE /////////////\n';
+		info += 'Total : '+totalpopulation;
+		info += '\n';
 		this.get('subspaces').each( function (ss) {
-			console.log('SUBSPACE '+ss.get('age')+': W:'+ss.get('width')+': D:'+ss.get('depth')+': H:'+ss.get('height'));
+			info += 'SUBSPACE '+ss.get('age')+': W:'+ss.get('width')+': D:'+ss.get('depth')+': H:'+ss.get('height');
 		});
-		console.log('//////////////////////////////////');
+		info += '\n//////////////////////////////////';
+
+        return info;
 	},
 
     populationToRange: function (population) {
@@ -621,6 +628,10 @@ var SPACE = OBJECT.extend({
             alert('Unknown population range');
             return null;
         }
+    },
+
+    setRandomQualityForActivity: function (quality, activity) {
+        return _.sample(ACTIVITY_CONSTANTS[activity]['space'][quality]);
     },
 
 	adapt: function () {
@@ -712,7 +723,18 @@ var SUBSPACE = OBJECT.extend({
 
 	addPerson: function (person) {
 		this.get('persons').add(person);
-	}
+	},
+
+    info: function () {
+        var info = '';
+        info += '///////////// SUBSPACE /////////////\n';
+        info += 'Age in this subspace: ' + this.get('age');
+        info += '\nPersons : '+this.get('persons').length;
+        info += '\n';
+        info += '\nW:'+this.get('width')+': D:'+this.get('depth')+': H:'+this.get('height');
+        info += '\n//////////////////////////////////';
+        return info;
+    }
 	
 });
 
@@ -861,8 +883,6 @@ var WORLD = Backbone.Model.extend({
 
     simulate: function () {
 
-        var ID = 0;
-
         // Create as many spaces as events
 
         var _ss = this.get('spaces');
@@ -893,6 +913,10 @@ var WORLD = Backbone.Model.extend({
                 _space.addRandomPerson();
             });
             _transformation = _space.adapt();
+
+            QUALITIES.forEach(function (quality) {
+                _space.set(quality, _space.setRandomQualityForActivity(quality,_event.get('activity')));
+            });
 
             // all persons of an event leave the space
             // at the same time at the end of the event
