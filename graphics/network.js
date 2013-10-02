@@ -4809,7 +4809,7 @@ links.Network.Slider = function(container) {
 
     this.frame = document.createElement("DIV");
     //this.frame.style.backgroundColor = "#E5E5E5";
-    this.frame.style.width = "80%";
+    this.frame.style.width = "600px";
     this.frame.style.position = "relative";
 
     this.title = document.createElement("DIV");

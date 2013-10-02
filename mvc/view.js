@@ -225,8 +225,8 @@ function drawNetworkCollapsed(world){
 
     // we create node entries for the drawn network
     // one for every event. we just consider all
-    // spaces in an activity group to be UPDATEs
-    // to that activity's space size
+    // spaces in an activity group to be UPDATE
+    // nodes for that activity.
 
     for (var activity in activities) {
 
@@ -236,13 +236,12 @@ function drawNetworkCollapsed(world){
             var spaceSize = space.get('subspaces').
                 map(function (ss) { return ss.get('width')*ss.get('depth'); /* TODO: ss.get('height') */}).
                 reduce(function (memo, num) { return memo+num;},0);
-            var timestamp = null;
 
             // we get the timestamp from the corresponding event
             // remember an event that corresponds to a space
             // has the same ID attribute as that space
 
-            timestamp = world.get('timeline').
+            var timestamp = world.get('timeline').
                 get('events').
                 findWhere({ID: space.get('ID')}).
                 get('start_time');
@@ -271,6 +270,9 @@ function drawNetworkCollapsed(world){
     network.draw(nodes.reverse(),connections,options);
 
     links.events.addListener(network, 'select', function () {onselect(network,world,nodes);});
+
+    $('#info-drawer').animate({left: '-250px'},100);
+
     console.log('draw END');
 }
 
@@ -343,52 +345,64 @@ function drawNetworkWithSampleMovements (world){
 
 function onselect (network,world,nodes) {
 
-    $('#info-drawer').animate({left: '0px'},100);
+    // Network Graph time view
 
-    var sel = network.getSelection();
-    var info = '';
-    var space = world.get('spaces').findWhere({ID: nodes[sel[0].row].id});
+    if ($('.network-slider-title').length != 0) {
 
-    if ( space == undefined ){
-
-        // node is a subspace
-
-        var subspace = undefined;
-        world.get('spaces').forEach(function (space) {
-            var _subspace = space.get('subspaces').findWhere({ID: nodes[sel[0].row].id});
-            subspace = _subspace != undefined? _subspace: subspace;
-        })
-
-        $('#info-space').hide();
-        $('#info-subspace').show();
-        $('#info-width').text(Math.round(subspace.get('width')));
-        $('#info-depth').text(Math.round(subspace.get('depth')));
-        $('#info-height').text(Math.round(subspace.get('height')));
-        $('#info-area').text(Math.round(subspace.get('width')*subspace.get('depth')));
-        $('#info-population').text(subspace.get('persons').length);
-        $('#info-age').text(subspace.get('age'));
     }
-    else {
-        var population = space.get('subspaces')
-            .map(function(ss){ return ss.get('persons').length;})
-            .reduce(function (memo, num) { return memo + num; },0);
 
-        $('#info-space').show();
-        $('#info-subspace').hide();
-        $('#info-width').text(Math.round(space.get('width')));
-        $('#info-depth').text(Math.round(space.get('depth')));
-        $('#info-height').text(Math.round(space.get('height')));
-        $('#info-area').text(Math.round(space.get('width')*space.get('depth')));
-        $('#info-population').text(population);
-        $('#info-activity').text(space.get('activity'));
-        $('#info-color').text(space.get('color'));
-        $('#info-stance').text(space.get('stance'));
-        $('.info-bar').each(function () {
-            var quality = $(this).attr('id').replace('info-','');
-            var quality_value = qualityValueToNumber(space.get(quality));
-            var barwidth = (quality_value * 20) + '%';
-            $(this).animate({width: barwidth}, 2000, function () {});
-        });
+    // Network Graph expanded view
+
+    else {
+
+        $('#info-drawer').animate({left: '0px'},100);
+
+        var sel = network.getSelection();
+        var info = '';
+        var space = world.get('spaces').findWhere({ID: nodes[sel[0].row].id});
+
+        if ( space == undefined ){
+
+            // node is a subspace
+
+            var subspace = undefined;
+            world.get('spaces').forEach(function (space) {
+                var _subspace = space.get('subspaces').findWhere({ID: nodes[sel[0].row].id});
+                subspace = _subspace != undefined? _subspace: subspace;
+            })
+
+            $('#info-space').hide();
+            $('#info-subspace').show();
+            $('#info-width').text(Math.round(subspace.get('width')));
+            $('#info-depth').text(Math.round(subspace.get('depth')));
+            $('#info-height').text(Math.round(subspace.get('height')));
+            $('#info-area').text(Math.round(subspace.get('width')*subspace.get('depth')));
+            $('#info-population').text(subspace.get('persons').length);
+            $('#info-age').text(subspace.get('age'));
+        }
+        else {
+            var population = space.get('subspaces')
+                .map(function(ss){ return ss.get('persons').length;})
+                .reduce(function (memo, num) { return memo + num; },0);
+
+            $('#info-space').show();
+            $('#info-subspace').hide();
+            $('#info-width').text(Math.round(space.get('width')));
+            $('#info-depth').text(Math.round(space.get('depth')));
+            $('#info-height').text(Math.round(space.get('height')));
+            $('#info-area').text(Math.round(space.get('width')*space.get('depth')));
+            $('#info-population').text(population);
+            $('#info-activity').text(space.get('activity'));
+            $('#info-color').text(space.get('color'));
+            $('#info-stance').text(space.get('stance'));
+            $('.info-bar').each(function () {
+                var quality = $(this).attr('id').replace('info-','');
+                var quality_value = qualityValueToNumber(space.get(quality));
+                var barwidth = (quality_value * 20) + '%';
+                $(this).animate({width: barwidth}, 2000, function () {});
+            });
+        }
+
     }
 }
 
