@@ -51,6 +51,8 @@
 //         3. SPACES (SPACE)
 //         4. CALENDAR_EVENTS (CALENDAR_EVENT)
 //
+//         - UTILITIES
+//
 //================================================
 
 
@@ -327,6 +329,50 @@ ACTIVITY_CONSTANTS['working'] = {  'population': { '1-10': {w:1.3, d:1.6, h:2.3}
                                     }
 };
 
+ACTIVITY_CONSTANTS['reading'] = {  'population': { '1-10': {w:1.3, d:1.6, h:2.3},
+                                                '11-50': {w:1.2, d:1.5, h:2.7},
+                                                '51-200': {w:1.1, d:1.3, h:3.5},
+                                                '201-500': {w:0.9, d:1.1, h:4.5},
+                                                '501-1000': {w:0.8, d:1.0, h:5.5},
+                                                '1000+': {w:0.6, d:0.9, h:7.0}
+                                },
+                                    'mobility': true,
+                                    'flexible': true,
+                                    'position': true,
+                                    'age': {'1-3': {w:0.4, d:0.4, h:0.6},  // TODO N/A children don't work
+                                        '4-8': {w:0.6, d:0.6, h:0.6},
+                                        '9-13': {w:0.8, d:0.8, h:0.8},
+                                        '14-18': {w:1.1, d: 1.1, h:1.1},
+                                        '19-25': {w:1.0, d: 1.0, h:1.0},
+                                        '26-35': {w:1.0, d: 1.0, h:1.0},
+                                        '36-50': {w:1.0, d: 1.0, h:1.0},
+                                        '51-65': {w:1.1, d: 1.1, h:1.1},
+                                        '65+': {w:1.2, d: 1.2, h:1.2}
+                                    },
+                                    'sex': true,
+                                    'space': {'lighting': ['low', 'medium', 'high', 'very high'],
+                                        'ventilation': ['very low', 'low', 'medium'],
+                                        'transparency': ['very low', 'low', 'medium', 'high', 'very high'],
+                                        'privacy': ['low', 'medium', 'high', 'very high'],
+                                        'soundvolume': ['very low', 'low'],
+                                        'warmth': ['low', 'medium', 'high', 'very high'],
+                                        'moisture': ['low', 'medium', 'high'],
+                                        'openness': ['very low', 'low', 'medium'],
+                                        'tactility': ['very low', 'low', 'medium'],
+                                        'softness': ['very low', 'low', 'medium'],
+                                        'color': ['focus colors', 'fun colors'],
+                                        'intensity': ['very low', 'low', 'medium'],
+                                        'stance': ['lying down', 'sitting low', 'sitting high']
+                                    },
+                                    'relationship': {'kinetic':true,
+                                        'visual':false,
+                                        'aural':false,
+                                        'distance': ['detached', 'attached','interwined'],
+                                        'interrupted': true,
+                                        'flexible':true
+                                    }
+};
+
 var RELATIONSHIP_CONSTANTS = {};
 
 RELATIONSHIP_CONSTANTS['socializing'] = {'cooking': {}};
@@ -340,21 +386,9 @@ RELATIONSHIP_CONSTANTS['WC'] = {'*': {  'kinetic': true,
                                      }
                                };
 
-var calendar_url = 'https://www.google.com/calendar/feeds/e4im0nbrikcp500vh87geriabs%40group.calendar.google.com/public/full?alt=json&orderby=starttime';
+//var calendar_url = 'https://www.google.com/calendar/feeds/e4im0nbrikcp500vh87geriabs%40group.calendar.google.com/public/full?alt=json&orderby=starttime';
 //var calendar_url = 'https://www.google.com/calendar/feeds/8cril4fdd9vcjecngrkr062g24%40group.calendar.google.com/public/full?alt=json&orderby=starttime&start-max=2013-12-16';
-
-Number.prototype.between = function (min, max) {
-    return this >= min && this <= max;
-};
-
-function sleep(milliseconds) {
-    var start = new Date().getTime();
-    for (var i = 0; i < 1e7; i++) {
-        if ((new Date().getTime() - start) > milliseconds){
-            break;
-        }
-    }
-}
+var calendar_url = 'https://www.google.com/calendar/feeds/5q2n7mn5vrp2cphfhmq1oiug28%40group.calendar.google.com/public/full?alt=json&orderby=starttime&max-results=999999';
 
 // =================================================
 //  1. OBJECT
@@ -486,53 +520,24 @@ var SPACE = OBJECT.extend({
 
 	addPerson: function (person) {
 		var age = person.get('age');
-		var agecat = '';
+		var age_range = this.ageToRange(age);
 
+        // This age range does not have a subspace
+        // or the space is empty
 
-		if ( age.between(1,3) ){
-			agecat = '1-3';
-		}
-		else if ( age.between(4,8) ){
-			agecat = '4-8';
-		}
-		else if ( age.between(9,13) ){
-			agecat = '9-13';
-		}
-		else if ( age.between(14,18) ){
-			agecat = '14-18';
-		}
-		else if ( age.between(19,25) ){
-			agecat = '19-25';
-		}
-		else if ( age.between(26,35) ){
-			agecat = '26-35';
-		}
-		else if ( age.between(36,50) ){
-			agecat = '36-50';
-		}
-		else if ( age.between(51,65) ){
-			agecat = '51-65';
-		}
-		else if ( age > 65 ){
-			agecat = '65+';
-		}
-		else {
-			alert('Unknown age range');
-		}
-
-		// Subspace creation
-
-        // Subspace for this age group does not exist or no space is empty
-		if ( (this.get('subspaces').length == 0) || (this.get('subspaces').get(agecat) == undefined) ) {
-			console.log('! subspace bucket created ['+agecat+']');
-			var _ss = new SUBSPACE({age: agecat, ID: ++ID});
+		if ( (this.get('subspaces').length == 0) || (this.get('subspaces').get(age_range) == undefined) ) {
+			console.log('! subspace bucket created ['+age_range+']');
+			var _ss = new SUBSPACE({age: age_range, ID: ++ID});
 			_ss.get('persons').add(person);
 			this.get('subspaces').add(_ss);
 		}
-        // Subspace exists for this age group
-		else if (this.get('subspaces').get(agecat)) {
+
+        // This age range has already a subspace
+        // so we just add the person to it
+
+		else if (this.get('subspaces').get(age_range)) {
 			console.log('! subspace bucket exists');
-			this.get('subspaces').get(agecat).get('persons').add(person);
+			this.get('subspaces').get(age_range).get('persons').add(person);
 		}
 		else {
 			alert('bucket check error');
@@ -544,17 +549,20 @@ var SPACE = OBJECT.extend({
 		var age = 0;
 		var rand = Math.random();
 		var p = null;
+        var person = null;
 
 		sex = Math.floor((rand*10)) % 2 == 0 ? 'male':'female';
 		age = Math.floor(rand*100)+1;
-		person = new PERSON({age: age,sex: sex});
+        person = new PERSON({age: age, sex: sex});
+
 		this.addPerson(person);
 	},
 
     removeRandomPerson: function () {
         var subspaces = this.get('subspaces');
 
-        // Prune empty subspaces
+        // Prune all the empty subspaces
+
         subspaces.map(function (ss) {
             if (ss.get('persons').length == 0) {
                 console.log('- SUBSPACE (removing empty subspace)');
@@ -563,6 +571,7 @@ var SPACE = OBJECT.extend({
         });
 
         // Remove the last person from a random subspace
+
         var randomSubspaceNumber = Math.floor((Math.random()*this.get('subspaces').length));
         var randomSubspace = this.get('subspaces').at(randomSubspaceNumber);
         if (randomSubspace != undefined){
@@ -570,40 +579,38 @@ var SPACE = OBJECT.extend({
         }
     },
 
-	printPersons: function () {
-		var totalpopulation = this.get('subspaces')
-							.map(function(ss){ return ss.get('persons').length;})
-							.reduce(function (memo, num) { return memo + num; },0);
-
-		console.log('/////////// POPULATION ///////////');
-		console.log('Total : '+totalpopulation);
-		console.log('');
-		this.get('subspaces').each( function (ss) {
-			var agepercent = (ss.get('persons').length / totalpopulation)*100;
-			console.log('AGE '+ss.get('age')+'-------------['+agepercent+'%]');
-			ss.get('persons').each( function (p) {
-				console.log(p.get('sex') + ' age ' + p.get('age'));
-			});
-		});
-		console.log('//////////////////////////////////');
-	},
-
-	info: function () {
-		var totalpopulation = this.get('subspaces')
-							.map(function(ss){ return ss.get('persons').length;})
-							.reduce(function (memo, num) { return memo + num; },0);
-
-        var info = '';
-		info += '///////////// SPACE /////////////\n';
-		info += 'Total : '+totalpopulation;
-		info += '\n';
-		this.get('subspaces').each( function (ss) {
-			info += 'SUBSPACE '+ss.get('age')+': W:'+ss.get('width')+': D:'+ss.get('depth')+': H:'+ss.get('height');
-		});
-		info += '\n//////////////////////////////////';
-
-        return info;
-	},
+    ageToRange: function (age) {
+        if ( age.between(1,3) ){
+            return '1-3';
+        }
+        else if ( age.between(4,8) ){
+            return '4-8';
+        }
+        else if ( age.between(9,13) ){
+            return '9-13';
+        }
+        else if ( age.between(14,18) ){
+            return '14-18';
+        }
+        else if ( age.between(19,25) ){
+            return '19-25';
+        }
+        else if ( age.between(26,35) ){
+            return '26-35';
+        }
+        else if ( age.between(36,50) ){
+            return '36-50';
+        }
+        else if ( age.between(51,65) ){
+            return '51-65';
+        }
+        else if ( age > 65 ){
+            return '65+';
+        }
+        else {
+            alert('Unknown age range');
+        }
+    },
 
     populationToRange: function (population) {
         if ( population.between(0,10) ){
@@ -966,3 +973,21 @@ var SPACES = Backbone.Collection.extend({
 var CALENDAR_EVENTS = Backbone.Collection.extend({
     model: CALENDAR_EVENT
 });
+
+
+// =================================================
+//  UTILITIES
+// =================================================
+
+Number.prototype.between = function (min, max) {
+    return this >= min && this <= max;
+};
+
+function sleep(milliseconds) {
+    var start = new Date().getTime();
+    for (var i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > milliseconds){
+            break;
+        }
+    }
+}

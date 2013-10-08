@@ -11,6 +11,9 @@
         <script src="constraintjs/cjs.js" type="text/javascript"></script>
         <script src="graphics/network.js" type="text/javascript"></script>
         <script src="graphics/jquery.magnific-popup.min.js" type="text/javascript"></script>
+        <script src="graphics/intro.js" type="text/javascript"></script>
+        <script src="graphics/d3.v3.min.js" type="text/javascript"></script>
+        <script src="graphics/nv.d3.js" type="text/javascript"></script>
         <script src="mvc/underscore.js" type="text/javascript"></script>
         <script src="mvc/backbone.js" type="text/javascript"></script>
         <script src="mvc/model.js" type="text/javascript"></script>
@@ -24,6 +27,7 @@
         <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,700italic,800italic,400,600,700,800' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" type="text/css" href="timeline/timeline.css">
         <link rel="stylesheet" type="text/css" href="graphics/magnific-popup.css" />
+        <link rel="stylesheet" type="text/css" href="graphics/introjs.css" />
         <link rel="stylesheet" type="text/css" href="itransform.css" />
     </head>
 
@@ -41,7 +45,6 @@
                     <h3>WIDTH</h3><div id="info-width" class="info-value"> 10</div>
                     <h3>DEPTH</h3><div id="info-depth" class="info-value"> 10</div>
                     <h3>HEIGHT</h3><div id="info-height" class="info-value"> 10</div>
-                    <h3>AREA</h3><div id="info-area" class="info-value"> 100</div>
                     <h3>POPULATION</h3><div id="info-population" class="info-value"> 23</div>
                  </div>
 
@@ -90,9 +93,9 @@
         <div id="content">
             <div id="header">
 
-                <i id="menu" class="icon-cog mfp-with-anim"></i>
-                <i id="calendar" class="icon-calendar"></i>
-                <i id="simulate" class="icon-play"></i>
+                <i id="menu" data-step="1" data-intro="Modify the application settings" class="icon-cog mfp-with-anim"></i>
+                <i id="calendar" data-step="2" data-intro="Read the google calendar in the events timeline" class="icon-calendar"></i>
+                <i id="simulate" data-step="3" data-intro="Simulate the calendar activities" class="icon-play"></i>
 
                 <div id="title"><span>T</span>ransformable <span>D</span>esigns</div>
 
@@ -106,8 +109,8 @@
 
                     <div id="timeline-toolbar">
 
-                        <div class="btn-group" btn="btn-timeline">
-                            <a class="btn" href="#"><i class="icon-align-center"></i> Timeline</a>
+                        <div data-step="4" data-intro="Choose the timeline display mode" class="btn-group dropup" btn="btn-timeline">
+                            <a class="btn" href="#">Timeline</a>
                             <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
                                 <span class="icon-caret-down"></span></a>
                             <ul class="dropdown-menu">
@@ -118,13 +121,15 @@
                             </ul>
                         </div>
 
-                        <div class="btn-group dropup">
-                            <a class="btn" id="btn-simulation" href="#"><i class="icon-align-center"></i> Simulation</a>
+                        <div data-step="5" data-intro="Choose the activities representation graph mode" class="btn-group dropup">
+                            <a class="btn" id="btn-simulation" href="#">Simulation</a>
                             <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
                                 <span class="icon-caret-down"></span></a>
                             <ul class="dropdown-menu">
                                 <li><a href="#" id="network-draw-expanded"><i class="icon-fixed-width icon-sitemap"></i> Expanded View</a></li>
                                 <li><a href="#" id="network-draw-collapsed"><i class="icon-fixed-width icon-bullseye"></i> Time View</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#" id="network-generate-report"><i class="i"></i> Generate Report</a></li>
                             </ul>
                         </div>
 
@@ -134,6 +139,15 @@
 
                 </div>
             </div>
+        </div>
+
+        <div id="report-drawer">
+
+            <i id="report-drawer-close" class="icon-remove"></i>
+            <svg id="stream"></svg>
+            <svg id="pie-report"></svg>
+            <svg id="qualities-chart"></svg>
+
         </div>
     </body>
 

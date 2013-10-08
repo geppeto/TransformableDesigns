@@ -97,12 +97,12 @@ $(document).on('timelinegraphmode',function(event,world){
         var spaceSizeLog = world.get('spaces')
             .at(index)
             .get('transformationLog')
-            .map(function (log) { return log.w + log.d + log.h; });
+            .map(function (log) { return log.w * log.d * log.h; });
 
         console.log(spaceSizeLog.toString());
         var maxSpaceSize = Math.round(_.max(spaceSizeLog));
 
-        height = maxSpaceSize/2 + 20;
+        height = maxSpaceSize/10 + 20;
         var hue = Math.min(Math.max(height, 20), 80) * 1.2; // hue between 0 (red) and 120 (green)
         var color = hsv2rgb(hue, 0.95, 0.95);
         var borderColor = hsv2rgb(hue, 0.9, 0.9);
@@ -178,11 +178,24 @@ function drawNetworkExpanded(world){
 
     world.get('spaces').forEach(function (space) {
         world.get('spaces').forEach(function (spaceinner) {
+            if (spaceinner.get('activity') != space.get('activity') &&
+                spaceinner.get('ID') != space.get('ID') &&
+                Math.round(Math.random()*100)%(world.get('spaces').length*4)==0) {
+                connections.push({  'from': space.get('ID'),
+                    'to': spaceinner.get('ID'),
+                    'color': 'darkgray',
+                    'style': Math.round(Math.random()*10)%8==0?'moving-arrows':'line',
+                    'length': 500
+                });
+            }
             if (spaceinner.get('activity') == space.get('activity') &&
                 spaceinner.get('ID') != space.get('ID')) {
                 connections.push({  'from': space.get('ID'),
                     'to': spaceinner.get('ID'),
-                    'color': 'darkgray'});
+                    'color': 'darkgray',
+                    'style': 'line',
+                    'length': 200
+                });
             }
         });
     });
@@ -276,72 +289,6 @@ function drawNetworkCollapsed(world){
     console.log('draw END');
 }
 
-function drawNetworkWithSampleMovements (world){
-    console.log('draw START');
-    var groupID = 0;
-    var subspaceID = 1000000;
-    var nodes = [];
-    var connections = [];
-
-    world.get('spaces').forEach(function (space) {
-        space.set('groupID', groupID);
-        nodes.push({'id': groupID,
-            'group': groupID,
-            'text': space.get('activity'),
-            'value': space.get('subspaces').length,
-            'style': 'dot'});
-
-        space.get('subspaces').forEach(function (subspace) {
-            subspace.set('subspaceID', subspaceID);
-            var connection_style = '';
-            if (subspaceID%3==0) {
-                connection_style = 'moving-dot';
-            }
-            else if (subspaceID%4==0) {
-                connection_style = 'moving-arrows';
-            }
-            else {
-                connection_style = 'line';
-            }
-            nodes.push({'id': subspaceID,
-                'text': subspace.get('age'),
-                'group': groupID,
-                'fontColor': 'darkgray',
-                'value': subspace.get('persons').length,
-                'style': 'dot'});
-            connections.push({  'from': subspaceID,
-                'to': groupID,
-                'color': 'lightgray',
-                'style': connection_style,
-                'length': 30});
-            subspaceID++;
-        });
-
-        if (groupID != 0) {
-            connections.push({  'from': groupID,
-                'to': groupID-1,
-                'color': 'darkgray'});
-        }
-
-        groupID++;
-    });
-
-    var options = {
-        "width":  "100%",
-        "height": "350px",
-        "backgroundColor": {
-            "strokeWidth": 0
-        },
-        "stabilize": true
-    };
-
-    var network = new links.Network(document.getElementById('network'));
-    network.draw(nodes,connections,options);
-
-    links.events.addListener(network, 'select', function () {onselect(network,world,nodes);});
-
-    console.log('draw END');
-};
 
 function onselect (network,world,nodes) {
 
@@ -376,7 +323,6 @@ function onselect (network,world,nodes) {
             $('#info-width').text(Math.round(subspace.get('width')));
             $('#info-depth').text(Math.round(subspace.get('depth')));
             $('#info-height').text(Math.round(subspace.get('height')));
-            $('#info-area').text(Math.round(subspace.get('width')*subspace.get('depth')));
             $('#info-population').text(subspace.get('persons').length);
             $('#info-age').text(subspace.get('age'));
         }
@@ -390,7 +336,6 @@ function onselect (network,world,nodes) {
             $('#info-width').text(Math.round(space.get('width')));
             $('#info-depth').text(Math.round(space.get('depth')));
             $('#info-height').text(Math.round(space.get('height')));
-            $('#info-area').text(Math.round(space.get('width')*space.get('depth')));
             $('#info-population').text(population);
             $('#info-activity').text(space.get('activity'));
             $('#info-color').text(space.get('color'));
@@ -404,6 +349,207 @@ function onselect (network,world,nodes) {
         }
 
     }
+}
+
+function generateReport (world) {
+    var data = [];
+    var activities = [];
+
+    //
+    // STREAM CHART ACTIVITY/SPACE/TIME
+    //
+
+    // we group the spaces by activity and we treat each
+    // group as one space that is created and modified
+
+    world.get('spaces').forEach(function (space) {
+        var activity = space.get('activity');
+        if (activities[activity] == undefined) {
+            activities[activity] = new Array(space);
+        }
+        else {
+            activities[activity].push(space);
+        }
+    });
+
+    for (var activity in activities) {
+
+        var values = [];
+        var activityspaces = activities[activity];
+
+        activityspaces.forEach(function (space) {
+            var spaceSize = space.get('subspaces').
+                map(function (ss) { return ss.get('width')*ss.get('depth'); /* TODO: ss.get('height') */}).
+                reduce(function (memo, num) { return memo+num;},0);
+
+            // we get the timestamp from the corresponding event
+            // remember an event that corresponds to a space
+            // has the same ID attribute as that space
+
+            var timestamp = world.get('timeline').
+                get('events').
+                findWhere({ID: space.get('ID')}).
+                get('start_time');
+
+            timestamp = timestamp.getTime();
+
+            values.push([timestamp, spaceSize]);
+        });
+
+        values = _.sortBy(values, function (d) { return d[0]; });
+        data.push({"key": activity, "values": values});
+    }
+
+    // interpolate time and space data to create
+    // equal length arrays for the chart
+
+    var alldates = data.map(function (d) { return d["values"]})
+        .reduce(function (k,l) { return k.concat(l)}, [])
+        .map(function (v) { return v[0]; });
+    var mindate = _.min(alldates);
+    var maxdate = _.max(alldates);
+
+    data = data.map(function (d) {
+        var values = d["values"];
+        var dates = [];
+        var sizes = [];
+        dates = dates.concat([mindate], values.map(function (v) {return v[0];}), [maxdate]);
+        sizes = sizes.concat([0], values.map(function (v) {return v[1];}), [0]);
+        var interpolatedValues = interpolateSizes(sizes, dates, [mindate, maxdate],10000000);
+
+        return {"key": d["key"], "values": _.zip(interpolatedValues["dates"],interpolatedValues["sizes"])};
+    });
+
+
+    nv.addGraph(function (){
+        var chart = nv.models.stackedAreaChart()
+            .x(function (d) {return d[0];})
+            .y(function (d) {return d[1];})
+            ;
+
+        chart.xAxis
+            .tickFormat(function (d) { return d3.time.format('%x')(new Date(d))});
+
+        chart.yAxis
+            .tickFormat(d3.format(',d'));
+
+        d3.select('#stream')
+            .datum(data)
+            .transition().duration(3000).call(chart);
+
+        nv.utils.windowResize(chart.update);
+
+        return chart;
+    });
+
+    /*
+    //
+    // ACTIVITY/SPACE PIE CHART
+    //
+
+    var piedata = [];
+
+    for (var activity in activities) {
+
+        var activityspaces = activities[activity];
+        var size = activityspaces.map(function (space) {
+                        return space.get('subspaces').
+                                map(function (ss) { return ss.get('width')*ss.get('depth'); }).
+                                reduce(function (memo, num) { return memo+num;},0);})
+            .reduce(function (memo, num) {return memo+num},0);
+
+        piedata.push({"label": activity, "value": size});
+    }
+
+    nv.addGraph(function() {
+        var chart = nv.models.pieChart()
+            .x(function(d) { return d.label })
+            .y(function(d) { return d.value })
+            .showLabels(false)
+            .donut(true);
+
+        d3.select("#pie-report")
+            .datum(piedata)
+            .transition().duration(3000)
+            .call(chart);
+
+        nv.utils.windowResize(chart.update);
+
+        return chart;
+    });
+    */
+
+    //
+    // QUALITIY/TIME CHART
+    //
+
+    // we group the spaces by activity and we treat each
+    // group as one space that is created and modified
+    var qualities = [];
+    var qualitiesdata = [];
+    var _QUALITIES = _.without(QUALITIES, 'stance', 'color');
+
+    _QUALITIES.forEach( function (quality) {
+
+        world.get('spaces').forEach(function (space) {
+            var timestamp = world.get('timeline').
+                get('events').
+                findWhere({ID: space.get('ID')}).
+                get('start_time');
+
+            timestamp = timestamp.getTime();
+
+            if (qualities[quality] == undefined) {
+                qualities[quality] = new Array({y: qualityValueToNumber(space.get(quality)), x: timestamp});
+            }
+            else {
+                qualities[quality].push({y: qualityValueToNumber(space.get(quality)), x: timestamp});
+            }
+        });
+
+        qualitiesdata.push({"key":quality, "values":qualities[quality]});
+
+    });
+
+    qualitiesdata = qualitiesdata.map(function (q) {
+        var _v = [];
+        return {"key":q["key"], "values":_v.concat([{x: maxdate+1, y: 0}], q["values"], [{x: mindate-1, y: 0}])};
+    })
+
+    // interpolate time and space data to create
+    // equal length arrays for the chart
+    /*
+    qualitiesdata = qualitiesdata.map(function (d) {
+        var values = d["values"];
+        var dates = [];
+        var sizes = [];
+        dates = dates.concat([mindate], values.map(function (v) {return v[1];}), [maxdate]);
+        sizes = sizes.concat([0], values.map(function (v) {return v[0];}), [0]);
+        var interpolatedValues = interpolateSizes(sizes, dates, [mindate, maxdate],10000000);
+
+        return {"key": d["key"], "values": _.zip(interpolatedValues["dates"],interpolatedValues["sizes"])};
+    });
+
+    */
+
+    nv.addGraph(function (){
+        var chart = nv.models.lineChart();
+
+        chart.xAxis
+            .tickFormat(function (d) { return d3.time.format('%x')(new Date(d))});
+
+        chart.yAxis
+            .tickFormat(d3.format(',r'));
+
+        d3.select('#qualities-chart')
+            .datum(qualitiesdata)
+            .transition().duration(3000).call(chart);
+
+        nv.utils.windowResize(chart.update);
+
+        return chart;
+    });
+
 }
 
 function qualityValueToNumber (value) {
@@ -444,6 +590,91 @@ var hsv2rgb = function(H, S, V) {
     return "RGB(" + parseInt(R*255) + "," + parseInt(G*255) + "," + parseInt(B*255) + ")";
 };
 
+var createInterpolant = function(xs, ys) {
+    var i, length = xs.length;
+
+    // Deal with length issues
+    if (length != ys.length) { throw 'Need an equal count of xs and ys.'; }
+    if (length === 0) { return function(x) { return 0; }; }
+    if (length === 1) {
+        // Impl: Precomputing the result prevents problems if ys is mutated later and allows garbage collection of ys
+        // Impl: Unary plus properly converts values to numbers
+        var result = +ys[0];
+        return function(x) { return result; };
+    }
+
+    // Rearrange xs and ys so that xs is sorted
+    var indexes = [];
+    for (i = 0; i < length; i++) { indexes.push(i); }
+    indexes.sort(function(a, b) { return xs[a] < xs[b] ? -1 : 1; });
+    var oldXs = xs, oldYs = ys;
+    // Impl: Creating new arrays also prevents problems if the input arrays are mutated later
+    xs = []; ys = [];
+    // Impl: Unary plus properly converts values to numbers
+    for (i = 0; i < length; i++) { xs.push(+oldXs[indexes[i]]); ys.push(+oldYs[indexes[i]]); }
+
+    // Get consecutive differences and slopes
+    var dys = [], dxs = [], ms = [];
+    for (i = 0; i < length - 1; i++) {
+        var dx = xs[i + 1] - xs[i], dy = ys[i + 1] - ys[i];
+        dxs.push(dx); dys.push(dy); ms.push(dy/dx);
+    }
+
+    // Get degree-1 coefficients
+    var c1s = [ms[0]];
+    for (i = 0; i < dxs.length - 1; i++) {
+        var m = ms[i], mNext = ms[i + 1];
+        if (m*mNext <= 0) {
+            c1s.push(0);
+        } else {
+            var dx = dxs[i], dxNext = dxs[i + 1], common = dx + dxNext;
+            c1s.push(3*common/((common + dxNext)/m + (common + dx)/mNext));
+        }
+    }
+    c1s.push(ms[ms.length - 1]);
+
+    // Get degree-2 and degree-3 coefficients
+    var c2s = [], c3s = [];
+    for (i = 0; i < c1s.length - 1; i++) {
+        var c1 = c1s[i], m = ms[i], invDx = 1/dxs[i], common = c1 + c1s[i + 1] - m - m;
+        c2s.push((m - c1 - common)*invDx); c3s.push(common*invDx*invDx);
+    }
+
+    // Return interpolant function
+    return function(x) {
+        // The rightmost point in the dataset should give an exact result
+        var i = xs.length - 1;
+        if (x == xs[i]) { return ys[i]; }
+
+        // Search for the interval x is in, returning the corresponding y if x is one of the original xs
+        var low = 0, mid, high = c3s.length - 1;
+        while (low <= high) {
+            mid = Math.floor(0.5*(low + high));
+            var xHere = xs[mid];
+            if (xHere < x) { low = mid + 1; }
+            else if (xHere > x) { high = mid - 1; }
+            else { return ys[mid]; }
+        }
+        i = Math.max(0, high);
+
+        // Interpolate
+        var diff = x - xs[i], diffSq = diff*diff;
+        return ys[i] + c1s[i]*diff + c2s[i]*diffSq + c3s[i]*diff*diffSq;
+    };
+};
+
+var interpolateSizes = function(sizes, dates, range, step) {
+    var f = createInterpolant(dates, sizes);
+
+    var resultsizes = [], resultdates = [];
+    var firstdate = range[0], lastdate = range[1];
+    for (var x = firstdate; x <= lastdate; x=x+step) {
+        resultsizes.push(Math.round(f(x)));
+        resultdates.push(x);
+    }
+
+    return { sizes: resultsizes, dates: resultdates };
+};
 /*
 
  / /BACKUP THIS FUNCTION IN CASE NETWORK LIBRARY IS UPDATED (in network.js)

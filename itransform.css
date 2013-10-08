@@ -103,6 +103,77 @@ html,body {-webkit-backface-visibility:hidden;}
     z-index: 0;
 }
 
+#report-drawer {
+    position: absolute;
+    right: -90%;
+    top: 0px;
+    width: 90%;
+    height: 100%;
+    background: rgba(255,255,255,0.9);
+    -webkit-box-shadow: -5px 0px 5px rgba(50, 50, 50, 0.45);
+    -moz-box-shadow:    -5px 0px 5px rgba(50, 50, 50, 0.45);
+    box-shadow:         -5px 0px 5px rgba(50, 50, 50, 0.45);
+    z-index: 10;
+}
+
+#report-drawer-close {
+    position: absolute;
+    left: 15px;
+    top: 15px;
+    color: darkslategrey;
+    cursor: pointer;
+}
+
+#report-drawer-close:hover {
+    color: whitesmoke;
+}
+
+#stream {
+    width: 90%;
+    margin-top: 20px;
+    margin-left: 5%;
+    height: 60%;
+}
+
+#pie-report {
+    width: 18%;
+    height: 60%;
+    margin-top: 20px;
+    display: none;
+}
+.disabled circle {
+    fill: white!important;
+}
+
+#qualities-chart {
+    width: 90%;
+    height: 30%;
+    margin-top: 1%;
+    margin-left: 5%;
+}
+.nv-point-paths, #stream .nv-groups {
+    display: none;
+}
+
+.nv-legend {
+    font-family: 'Open Sans', Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    color: #706f6f;
+    text-transform: uppercase;
+}
+
+.nv-axis {
+    font-family: 'Open Sans', Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    fill: gray;
+    text-transform: uppercase;
+}
+
+.nv-x {
+    transform: translate(0,480)!important;
+}
 .network-slider-title {
     font-family: 'Open Sans',sans-serif;
     font-size: 12px;
@@ -218,8 +289,9 @@ html,body {-webkit-backface-visibility:hidden;}
     width: 300px;
     height: 40px;
     display: block;
-    right: 0px;
+    right: 10px;
     bottom: 250px;
+    display: none;
 }
 
 .btn-group a {
@@ -284,6 +356,23 @@ div.bar {
     width:auto;
     max-width: 400px;
     margin: 0 auto;
+}
+
+.white-popup-no-limit {
+    position: relative;
+    background: #FFF;
+    padding: 25px;
+    width:auto;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.introjs-arrow.top {
+    right: 10px;
+}
+
+.introjs-tooltip {
+    right: 0px;
 }
 
 /*

@@ -6,6 +6,7 @@ var timelineToggle = true;
 $(window).load(function () {
 
     initEvents();
+    //introJs().start();
 
 });
 
@@ -17,6 +18,7 @@ function initEvents() {
 
     $('#simulate').click(function () {
         world.simulate();
+        $('#timeline-toolbar').fadeIn('fast');
     });
 
     $('#menu').click(function () {
@@ -39,6 +41,14 @@ function initEvents() {
 
     $('#network-draw-expanded').click(function () {
         drawNetworkExpanded(world);
+    });
+
+    $('#network-generate-report').click(function (){
+        $('#report-drawer').animate({right: '0px'}, 400, generateReport(world));
+    });
+
+    $('#report-drawer-close').click(function (){
+        $('#report-drawer').animate({right: '-90%'}, 400);
     });
 
     $('#info-drawer-close').click(function (event) {
