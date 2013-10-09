@@ -48,7 +48,9 @@ function displayMenu () {
     var src = "<div class='white-popup mfp-with-anim'><form id='settings-form'>" +
         "<div class='input-prepend'>" +
         "<span class='add-on'><i class='icon-calendar'></i></span>" +
-        "<input id='calendar-url' class='span2' type='text' placeholder='Enter your Google Calendar link'></div>" +
+        "<input id='calendar-url' class='span2' type='text' placeholder='Enter your Google Calendar link'>" +
+        "<div id='max-events-div'><span class='add-on'><i class='icon-align-left'></i></span>" +
+        "<input id='max-events' class='span2' type='text' placeholder='Maximum Events (default 99999)'></div></div>" +
         "<a id='save-settings' class='btn' href='#'><i class='icon-save'></i> Save</a></form></div>";
 
     $.magnificPopup.open({
@@ -64,8 +66,9 @@ function displayMenu () {
 
     $('#save-settings').click(function (event){
         event.preventDefault();
-        calendar_url = $('#calendar-url').val();
-        console.log(calendar_url);
+        calendar_url = $('#calendar-url').val() == ""?calendar_url:$('#calendar-url').val();
+        MAX_EVENTS = $('#max-events').val() == ""?MAX_EVENTS:$('#max-events').val();
+        calendar_url = calendar_url.replace(/&max-results=\d+/, '&max-results='+MAX_EVENTS);
     });
 }
 
@@ -386,14 +389,23 @@ function generateReport (world) {
             // remember an event that corresponds to a space
             // has the same ID attribute as that space
 
-            var timestamp = world.get('timeline').
+            var timestamp_start = world.get('timeline').
                 get('events').
                 findWhere({ID: space.get('ID')}).
                 get('start_time');
 
-            timestamp = timestamp.getTime();
+            timestamp_start = timestamp_start.getTime();
 
-            values.push([timestamp, spaceSize]);
+            var timestamp_end = world.get('timeline').
+                get('events').
+                findWhere({ID: space.get('ID')}).
+                get('end_time');
+
+            timestamp_end = timestamp_end.getTime();
+
+            values.push([timestamp_start-1, 1]);
+            values.push([timestamp_start, spaceSize]);
+            values.push([timestamp_end, 1]);
         });
 
         values = _.sortBy(values, function (d) { return d[0]; });

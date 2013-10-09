@@ -386,9 +386,11 @@ RELATIONSHIP_CONSTANTS['WC'] = {'*': {  'kinetic': true,
                                      }
                                };
 
+var MAX_EVENTS = 99999;
+
 //var calendar_url = 'https://www.google.com/calendar/feeds/e4im0nbrikcp500vh87geriabs%40group.calendar.google.com/public/full?alt=json&orderby=starttime';
 //var calendar_url = 'https://www.google.com/calendar/feeds/8cril4fdd9vcjecngrkr062g24%40group.calendar.google.com/public/full?alt=json&orderby=starttime&start-max=2013-12-16';
-var calendar_url = 'https://www.google.com/calendar/feeds/5q2n7mn5vrp2cphfhmq1oiug28%40group.calendar.google.com/public/full?alt=json&orderby=starttime&max-results=999999';
+var calendar_url = 'https://www.google.com/calendar/feeds/5q2n7mn5vrp2cphfhmq1oiug28%40group.calendar.google.com/public/full?alt=json&orderby=starttime&max-results='+MAX_EVENTS;
 
 // =================================================
 //  1. OBJECT
@@ -802,7 +804,6 @@ var CALENDAR_EVENT = Backbone.Model.extend({
 var TIMELINE = Backbone.Model.extend({
 
     defaults: {
-        calendar: calendar_url,
         events: null,
         availability: null,
         history: null
@@ -812,7 +813,7 @@ var TIMELINE = Backbone.Model.extend({
         this.set('events', new CALENDAR_EVENTS());
         var events = this.get('events');
 
-        $.getJSON(this.get('calendar'), function (data) {
+        $.getJSON(calendar_url, function (data) {
             for(var i = 0; i < data.feed.entry.length; i++){
                 var _start_time = new Date(data.feed.entry[i].gd$when[0].startTime);
                 var _start_time_index = (_start_time.getHours()*60)+

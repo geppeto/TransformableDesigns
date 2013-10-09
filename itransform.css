@@ -485,6 +485,10 @@ input.span2 {
     margin-left: 10px;
 }
 
+#max-events-div {
+    margin-top: 10px;
+}
+
 #save-settings {
     margin-top: 10px;
     margin-left: 150px;
